@@ -16,7 +16,7 @@ import com.google.gson.Gson
 class RecommendAdapter(var homeInfoResult: HomeInfoResult?) : RecyclerView.Adapter<RecommendAdapter.ViewHolder>() {
 
     private val tag : String  = "RecommendAdapter";
-    private var recommendList = homeInfoResult?.PageList()?.list
+    private var recommendList = homeInfoResult?.data?.list
 
     //在内部类里面获取到item里面的组件
     inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){

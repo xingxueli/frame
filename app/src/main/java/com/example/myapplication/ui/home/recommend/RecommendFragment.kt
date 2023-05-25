@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentRecommendBinding
 
 /**
@@ -20,6 +23,9 @@ class RecommendFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    //如何从别的地方获取数据，而不是到处写接口
+//    val sharedViewModel: SharedViewModel by viewModels()
 
     companion object {
         fun newInstance(foo: Int): RecommendFragment {
@@ -36,13 +42,7 @@ class RecommendFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val recommendViewModel =
-            ViewModelProvider(this).get(RecommendViewModel::class.java)
         _binding = FragmentRecommendBinding.inflate(inflater, container, false)
-        var recyclerView = binding.recycleViewItem
-        var layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = RecommendAdapter(recommendViewModel.homeInfoResult.value)
         return binding.root
     }
 
@@ -51,16 +51,13 @@ class RecommendFragment : Fragment() {
             ViewModelProvider(this).get(RecommendViewModel::class.java)
 
         super.onViewCreated(view, savedInstanceState)
-        var recyclerView = binding.recycleViewItem
-        var layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = RecommendAdapter(recommendViewModel.homeInfoResult.value)
-//        recommendViewModel.homeInfoResult.observe(viewLifecycleOwner) {
-//            if(it.code != 2000){
-//                Toast.makeText(context,it.message, Toast.LENGTH_SHORT).show()
-//            }
-//            recyclerView.adapter = RecommendAdapter(it)
-//        }
+        binding.recyclerView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
+        recommendViewModel.homeInfoResult.observe(viewLifecycleOwner) {
+            if(it.code != 2000){
+                Toast.makeText(context,it.message, Toast.LENGTH_SHORT).show()
+            }
+            binding.recyclerView.adapter = RecommendAdapter(it)
+        }
 
     }
 
