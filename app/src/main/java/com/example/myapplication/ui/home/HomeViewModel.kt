@@ -3,13 +3,8 @@ package com.example.myapplication.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.ui.net.RetrofitService
-import com.example.myapplication.ui.net.RetrofitUtils
-import com.example.myapplication.ui.net.model.HomeInfoResult
-import com.example.myapplication.ui.net.model.TabModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.myapplication.ui.network.model.HomeInfoResult
+import com.example.myapplication.ui.network.model.TabModel
 
 /**
  * 在使用mvvm架构时，官方推荐我们将网络请求等数据处理都放到ViewModel中，更好实现数据处理和数据解耦

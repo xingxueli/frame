@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <!--android:paddingTop="?attr/actionBarSize"-->
+
+    <TextView
+        android:id="@+id/search_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:onClick="onClick"
+        android:text="搜索"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/iv_arrow"
+        app:layout_constraintLeft_toRightOf="@id/searchActivitySearchView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/search_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:onClick="onClick"
+        android:src="@drawable/search_back_24dp"
+        app:layout_constraintBottom_toTopOf="@id/iv_arrow"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/searchActivitySearchView"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchActivitySearchView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        app:iconifiedByDefault="false"
+        app:layout_constraintBottom_toTopOf="@id/iv_arrow"
+        app:layout_constraintLeft_toRightOf="@id/search_back"
+        app:layout_constraintRight_toLeftOf="@id/search_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:queryHint="搜索职位/公司/内容" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchActivityRecyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_history" />
+
+    <ImageView
+        android:id="@+id/iv_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:onClick="onClick"
+        android:rotation="180"
+        android:src="@mipmap/icon_arrow_up"
+        app:layout_constraintBottom_toTopOf="@id/searchActivityRecyclerView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/tv_history"
+        app:layout_constraintTop_toBottomOf="@id/searchActivitySearchView" />
+
+
+    <TextView
+        android:id="@+id/tv_history"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:onClick="onClick"
+        android:text="历史记录"
+        app:layout_constraintBottom_toTopOf="@id/searchActivityRecyclerView"
+        app:layout_constraintLeft_toRightOf="@id/iv_arrow"
+        app:layout_constraintTop_toBottomOf="@id/searchActivitySearchView" />
+
+    <ImageView
+            android:id="@+id/iv_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="10dp"
+            android:onClick="onClick"
+            android:src="@mipmap/icon_dustbin"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/searchActivityRecyclerView"
+            app:layout_constraintTop_toBottomOf="@id/searchActivitySearchView"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_finish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:hint="完成"
+        android:onClick="onClick"
+        android:textColorHint="#939393"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/searchActivityRecyclerView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchActivitySearchView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

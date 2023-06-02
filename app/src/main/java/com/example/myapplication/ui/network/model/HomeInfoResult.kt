@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.net.model
+package com.example.myapplication.ui.network.model
 
 class HomeInfoResult {
     var code: Int? = null
@@ -7,7 +7,7 @@ class HomeInfoResult {
 
     inner class PageList {
         var hasNext = false
-        var list: List<CandidateInfoBrief>? = null
+        var list: MutableList<CandidateInfoBrief>? = null
     }
 
 }

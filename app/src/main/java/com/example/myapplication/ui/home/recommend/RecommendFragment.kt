@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentRecommendBinding
 
@@ -24,8 +26,16 @@ class RecommendFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: RecommendAdapter
+    private lateinit var recommendViewModel: RecommendViewModel
+
     //如何从别的地方获取数据，而不是到处写接口
 //    val sharedViewModel: SharedViewModel by viewModels()
+
+    private var currentPage = 1
+    private var hasNext = true
 
     companion object {
         fun newInstance(foo: Int): RecommendFragment {
@@ -42,28 +52,74 @@ class RecommendFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        recommendViewModel =
+            ViewModelProvider(this).get(RecommendViewModel::class.java)
         _binding = FragmentRecommendBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val recommendViewModel =
-            ViewModelProvider(this).get(RecommendViewModel::class.java)
-
         super.onViewCreated(view, savedInstanceState)
-        binding.recyclerView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-        recommendViewModel.homeInfoResult.observe(viewLifecycleOwner) {
-            if(it.code != 2000){
-                Toast.makeText(context,it.message, Toast.LENGTH_SHORT).show()
+        adapter = RecommendAdapter()
+        binding.recyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerView.adapter = adapter
+
+        // 观察数据变化
+        recommendViewModel.dataList.observe(viewLifecycleOwner) {
+            // 更新数据源
+            if (currentPage == 1) {
+                // 下拉刷新
+                adapter.setData(it)
+                hasNext = true
+            } else {
+                // 底部加载更多
+                adapter.addData(it)
             }
-            binding.recyclerView.adapter = RecommendAdapter(it)
         }
+        // 添加下拉刷新监听
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            // 执行下拉刷新操作
+            currentPage = 1
+            recommendViewModel.refreshData()
+
+            // 刷新完成后，停止刷新动画
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+        // 添加底部加载更多监听
+        bindScroll(binding.recyclerView,recommendViewModel)
+
+        // 初始化数据
+        currentPage = 1
+        recommendViewModel.initData(currentPage)
 
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // 添加底部加载更多监听
+    private fun bindScroll(recyclerView : RecyclerView,recommendViewModel : RecommendViewModel){
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                val threshold = 5 // 定义触发懒加载的阈值，例如剩余5个item时触发加载
+
+                if (hasNext && !recommendViewModel.isLoading && visibleItemCount + firstVisibleItemPosition >= totalItemCount - threshold && firstVisibleItemPosition >= 0) {
+                    // 滚动到列表底部，执行底部加载更多操作
+                    currentPage++
+                    recommendViewModel.loadMoreData(currentPage)
+                }
+            }
+        })
     }
 
 }

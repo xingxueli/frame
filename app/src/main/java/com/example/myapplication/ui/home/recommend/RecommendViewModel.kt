@@ -1,15 +1,13 @@
 package com.example.myapplication.ui.home.recommend
 
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.ui.net.RetrofitService
-import com.example.myapplication.ui.net.RetrofitUtils
-import com.example.myapplication.ui.net.model.CandidateFilter
-import com.example.myapplication.ui.net.model.HomeInfoResult
-import com.example.myapplication.ui.net.model.TabModel
+import com.example.myapplication.ui.network.RetrofitService
+import com.example.myapplication.ui.network.RetrofitUtils
+import com.example.myapplication.ui.network.model.CandidateFilter
+import com.example.myapplication.ui.network.model.CandidateInfoBrief
+import com.example.myapplication.ui.network.model.HomeInfoResult
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,47 +27,80 @@ class RecommendViewModel : ViewModel() {
 
     private val tag : String  = "RecommendViewModel";
 
-    private val _homeInfoResult = MutableLiveData<HomeInfoResult>().apply {
+    var isLoading: Boolean = false
+
+    val dataList: MutableLiveData<MutableList<CandidateInfoBrief>> = MutableLiveData()
+
+    fun initData(pageNum : Int) {
+        // 执行初始化数据操作
+        // 设置 isLoading 为 true，表示正在加载数据
+        isLoading = true
+
+        // 模拟加载数据的操作
+        // 加载完成后更新 dataList，并将 isLoading 设置为 false
+        // 例如，你可以在这里发起网络请求或从数据库中加载数据
+        // 加载完成后，通过调用 dataList.postValue(dataListValue) 来更新数据
+        loadData(pageNum)
+
+    }
+
+    fun refreshData() {
+        // 执行下拉刷新操作
+        // 设置 isLoading 为 true，表示正在加载数据
+        isLoading = true
+
+        // 模拟刷新数据的操作
+        // 刷新完成后更新 dataList，并将 isLoading 设置为 false
+        loadData(1)
+
+    }
+
+    fun loadMoreData(pageNum : Int) {
+        // 执行底部加载更多操作
+        // 设置 isLoading 为 true，表示正在加载数据
+        isLoading = true
+
+        // 模拟加载更多数据的操作
+        // 加载完成后更新 dataList，并将 isLoading 设置为 false
+        loadData(pageNum)
+
+    }
+
+    private fun loadData(pageNum: Int){
+
+        var homeInfoResult : HomeInfoResult? = null
         val infoResultService = RetrofitUtils.create(RetrofitService::class.java)
-        var userToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZjMzODExMzYwYjQ1NGZiNWFiYjFkYWVlM2FkNDMiLCJjcmVhdGVUaW1lIjoxNjg0NzI2Mjg1NDE0LCJpYXQiOjE2ODQ3MjYyODUsImlzcyI6ImFwcF9pc3N1ZXIifQ.CFw6MXULYoQUzt12-AbGGeCUKvFjgfbs2JOrAkyc-9k"
+        var userToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZjMzODExMzYwYjQ1NGZiNWFiYjFkYWVlM2FkNDMiLCJjcmVhdGVUaW1lIjoxNjg1MzIyODk5MDY0LCJpYXQiOjE2ODUzMjI4OTksImlzcyI6ImFwcF9pc3N1ZXIifQ.fq8B6CDkRgLDf05h-pZa62xSbSx3s7B5keb0aJa2o1o"
         var role = 2
         var candidateFilter : CandidateFilter = CandidateFilter()
+        var pageSize = 10
         //获取user token
 //        val sharedPreferences =
 //            requireContext().getSharedPreferences(AllConfig.SHARED_PREFERENCES, Context.MODE_PRIVATE)
 //        userToken = sharedPreferences.getString(AllConfig.USER_TOKEN, "").toString()
 
-        infoResultService.getHomeInfo(userToken,role,1,54,856257309058404352,candidateFilter).enqueue(object : Callback<HomeInfoResult> {
+        infoResultService.getHomeInfo(userToken,role,1,54,856257309058404352,pageNum,pageSize,candidateFilter).enqueue(object : Callback<HomeInfoResult> {
             override fun onResponse(
                 call: Call<HomeInfoResult>,
                 response: Response<HomeInfoResult>
             ) {
                 //todo 10007 token 过期 刷新页面并询问是否重新登录
-                value = response.body()
+                homeInfoResult = response.body()
                 var gson = Gson()
-                Log.i(tag,gson.toJson(value))
+                Log.i(tag,gson.toJson(homeInfoResult))
+                if(homeInfoResult?.code != 2000){
+                    return
+                }
+                dataList.postValue(homeInfoResult!!.data!!.list)
+                isLoading = false
             }
 
             override fun onFailure(call: Call<HomeInfoResult>, t: Throwable) {
                 t.message?.let { Log.i(tag, it) }
+                isLoading = false
             }
 
         })
-    }
-    val homeInfoResult: LiveData<HomeInfoResult> = _homeInfoResult
-
-    private val _tabModel = MutableLiveData<List<TabModel>>().apply {
-        val tabModel1 = TabModel()
-        tabModel1.tag = 0
-        tabModel1.title = "java"
-        val tabModel2 = TabModel()
-        tabModel2.tag = 1
-        tabModel2.title = "CTO"
-        value = mutableListOf(tabModel1,tabModel2)
-    }
-    val tabModel: LiveData<List<TabModel>> = _tabModel
-
-    fun getHomeList() {
 
     }
 

@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.net.model
+package com.example.myapplication.ui.network.model
 
 class CandidateFilter {
 

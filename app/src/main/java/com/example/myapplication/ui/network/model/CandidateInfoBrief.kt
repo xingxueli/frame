@@ -1,24 +1,18 @@
-package com.example.myapplication.ui.net.model
+package com.example.myapplication.ui.network.model
 
 class CandidateInfoBrief {
 
     var id: Long? = null
 
     var uid: String? = null
-//
-//    /**
-//     * candidate's name
-//     */
-//    val name: String? = null
+
+    var name: String? = null
 //
 //    private val firstName: String? = null
 //
 //    private val lastName: String? = null
 //
-//    /**
-//     * url of the candidate's avatar(head icon)
-//     */
-//    val avatar: String? = null
+      var avatar: String? = null
 //
 //    /**
 //     * candidate's gender
