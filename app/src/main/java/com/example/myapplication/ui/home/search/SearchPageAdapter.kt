@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.adapter
+package com.example.myapplication.ui.home.search
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 
-class ContentAdapter2 : RecyclerView.Adapter<ContentAdapter2.ViewHolder>() {
+class SearchPageAdapter : RecyclerView.Adapter<SearchPageAdapter.ViewHolder>() {
 
     private val tag : String  = "ContentAdapter2";
     private val dataList = mutableListOf<String>()

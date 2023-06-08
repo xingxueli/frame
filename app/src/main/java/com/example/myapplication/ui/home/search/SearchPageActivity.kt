@@ -14,9 +14,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ActivitySearchPageBinding
-import com.example.myapplication.ui.adapter.ContentAdapter2
-import com.example.myapplication.ui.adapter.OnItemClickListener
-import com.example.myapplication.ui.adapter.OnItemDeleteListener
 
 
 class SearchPageActivity : AppCompatActivity() {
@@ -35,7 +32,7 @@ class SearchPageActivity : AppCompatActivity() {
 
     private val historyContentList: MutableList<String> = ArrayList()
 
-    private var historyAdapter: ContentAdapter2? = null
+    private var historyAdapter: SearchPageAdapter? = null
 
     private var isHidePartialHistory = true //是否隐藏部分历史,默认为true
 
@@ -91,7 +88,7 @@ class SearchPageActivity : AppCompatActivity() {
         val itemDecorationVer =
             DividerItemDecoration(applicationContext, DividerItemDecoration.VERTICAL)
         itemDecorationVer.setDrawable(ColorDrawable(Color.parseColor("#e0e0e0")))
-        historyAdapter = ContentAdapter2()
+        historyAdapter = SearchPageAdapter()
         //历史记录先不显示全部
         historyAdapter!!.setData(historyContentList)
         val gmHistory = GridLayoutManager(applicationContext, 2)

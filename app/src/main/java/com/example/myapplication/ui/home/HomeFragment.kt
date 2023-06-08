@@ -2,6 +2,7 @@ package com.example.myapplication.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,24 +12,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.myapplication.R
 import com.example.myapplication.ui.home.search.SearchPageActivity
 import com.example.myapplication.databinding.FragmentHomeBinding
+import com.example.myapplication.ui.dashboard.preference.PreferenceListActivity
+import com.example.myapplication.ui.home.recommend.RecommendAdapter
 import com.example.myapplication.ui.home.recommend.RecommendFragment
+import com.example.myapplication.ui.network.model.CandidatePreference
+import com.example.myapplication.ui.network.model.PreferenceOption
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
 
 
-/**
- *
- */
-class HomeFragment : Fragment(),MenuProvider{
+class HomeFragment : Fragment(){
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -39,18 +45,17 @@ class HomeFragment : Fragment(),MenuProvider{
     private lateinit var searchView: SearchView
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager2: ViewPager2
-//    private lateinit var toolbar: Toolbar
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var adapter: TabLayoutChildViewPager
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        val homeViewModel =
-//            ViewModelProvider(this)[HomeViewModel::class.java]
+        homeViewModel =
+            ViewModelProvider(this)[HomeViewModel::class.java]
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        requireActivity().addMenuProvider(this)// 注册当前 Fragment 作为菜单提供者
-//        toolbar = binding.toolBar
         tabLayout = binding.myTablelayout
         viewPager2 = binding.myViewpage2
         return binding.root
@@ -58,57 +63,38 @@ class HomeFragment : Fragment(),MenuProvider{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = TabLayoutChildViewPager(childFragmentManager, lifecycle)
-        adapter.addFragments(initChildFragmentList())
-        adapter.addFragmentTabViews(initTabViewList())
-        viewPager2.adapter = adapter
-        TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.customView = adapter.getTabView(position)
-            viewPager2.setCurrentItem(tab.position, true)
-        }.attach()
+        adapter = TabLayoutChildViewPager(childFragmentManager, lifecycle)
+        homeViewModel.dataList.observe(viewLifecycleOwner){
+            var tabFragments = mutableListOf<Fragment>()
+            var tabViews = mutableListOf<View>()
+            for (preferenceOption in it) {
+                val tabView: View = LayoutInflater.from(activity).inflate(R.layout.custom_tab_layout, null)
+                val tabText = tabView.findViewById<TextView>(R.id.tab_text)
+                tabText.text = preferenceOption.channel
+                tabViews.add(tabView)
+                tabFragments.add(RecommendFragment.newInstance(preferenceOption.preferenceId!!))
+            }
+            adapter.addFragments(tabFragments)
+            adapter.addFragmentTabViews(tabViews)
+            viewPager2.adapter = adapter
+            TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
+                tab.customView = adapter.getTabView(position)
+                viewPager2.setCurrentItem(tab.position, true)
+            }.attach()
+        }
 
         bindTabView()
-//        setupToolbar()
+
+        //先渲染视图，再启动数据
+        homeViewModel.initData()
+
+//        val toolbar: Toolbar = binding.toolBar
+//        toolbar.inflateMenu(R.menu.menu_fragment)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        requireActivity().removeMenuProvider(this) // 在 Fragment 销毁时取消注册菜单提供者
-    }
-
-//    private fun setupToolbar() {
-//        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-//        (activity as AppCompatActivity).supportActionBar?.apply {
-//            title = "My Fragment"
-//            // 其他 Toolbar 相关设置，如显示返回按钮等
-//        }
-//    }
-
-    private fun initChildFragmentList():MutableList<Fragment>{
-        var recommendFragment1 = RecommendFragment.newInstance(1)
-        var recommendFragment2 = RecommendFragment.newInstance(2)
-        var recommendFragment3 = RecommendFragment.newInstance(3)
-        return mutableListOf(recommendFragment1,recommendFragment2,recommendFragment3)
-    }
-
-    private fun initTabViewList() : MutableList<View> {
-
-        // 创建标签样式
-        val tabView1: View = LayoutInflater.from(activity).inflate(com.example.myapplication.R.layout.custom_tab_layout, null)
-//        val tabIcon1 = tabView1.findViewById<ImageView>(R.id.tab_icon)
-        val tabText1 = tabView1.findViewById<TextView>(com.example.myapplication.R.id.tab_text)
-//        tabIcon1.setImageResource(R.drawable.tab_icon1)
-        tabText1.text = "Java"
-
-        val tabView2: View = LayoutInflater.from(activity).inflate(com.example.myapplication.R.layout.custom_tab_layout, null)
-        val tabText2 = tabView2.findViewById<TextView>(com.example.myapplication.R.id.tab_text)
-        tabText2.text = "技术总监"
-
-        val tabView3: View = LayoutInflater.from(activity).inflate(com.example.myapplication.R.layout.custom_tab_layout, null)
-        val tabText3 = tabView3.findViewById<TextView>(com.example.myapplication.R.id.tab_text)
-        tabText3.text = "CTO"
-        return mutableListOf(tabView1,tabView2,tabView3);
     }
 
     class TabLayoutChildViewPager(manager: FragmentManager, lifecycle: Lifecycle) :  FragmentStateAdapter(manager,lifecycle ){
@@ -153,7 +139,7 @@ class HomeFragment : Fragment(),MenuProvider{
     }
 
     private fun bindTabView(){
-        binding.myTablelayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 changeTabSelect(tab) //Tab获取焦点
             }
@@ -209,18 +195,6 @@ class HomeFragment : Fragment(),MenuProvider{
             tabText2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
             tabText2?.paint?.isFakeBoldText = false
         }
-    }
-
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.menu_fragment,menu);
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        when(menuItem.itemId){
-            R.id.action_add -> TODO()
-            R.id.action_search -> startActivity(Intent(requireContext(), SearchPageActivity::class.java))
-        }
-        return super.onContextItemSelected(menuItem)
     }
 
 }

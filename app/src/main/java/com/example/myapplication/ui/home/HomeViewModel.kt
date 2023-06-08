@@ -1,10 +1,21 @@
 package com.example.myapplication.ui.home
 
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.myapplication.App
+import com.example.myapplication.ui.local.SPUtils
+import com.example.myapplication.ui.network.RetrofitService
+import com.example.myapplication.ui.network.RetrofitUtils
+import com.example.myapplication.ui.network.model.ApiResponse
 import com.example.myapplication.ui.network.model.HomeInfoResult
-import com.example.myapplication.ui.network.model.TabModel
+import com.example.myapplication.ui.network.model.PreferenceOption
+import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * 在使用mvvm架构时，官方推荐我们将网络请求等数据处理都放到ViewModel中，更好实现数据处理和数据解耦
@@ -18,23 +29,40 @@ import com.example.myapplication.ui.network.model.TabModel
  */
 class HomeViewModel : ViewModel() {
 
-    private val _homeInfoResult = MutableLiveData<HomeInfoResult>().apply {
+    private val tag : String  = "HomeViewModel";
 
+    val dataList: MutableLiveData<List<PreferenceOption>> = MutableLiveData()
+
+    fun initData() {
+        var role = SPUtils.getInt(App.instance, "X-Role", 0)
+        loadData(role)
     }
-    val homeInfoResult: LiveData<HomeInfoResult> = _homeInfoResult
 
-    private val _tabModel = MutableLiveData<List<TabModel>>().apply {
-        val tabModel1 = TabModel()
-        tabModel1.tag = 0
-        tabModel1.title = "java"
-        val tabModel2 = TabModel()
-        tabModel2.tag = 1
-        tabModel2.title = "CTO"
-        value = mutableListOf(tabModel1,tabModel2)
-    }
-    val tabModel: LiveData<List<TabModel>> = _tabModel
+    private fun loadData(role : Int){
+        val retrofitService = RetrofitUtils.create(RetrofitService::class.java)
 
-    fun getHomeList() {
+        retrofitService.getCandidateTabs().enqueue(object :
+            Callback<ApiResponse<List<PreferenceOption>>> {
+            override fun onResponse(
+                call: Call<ApiResponse<List<PreferenceOption>>>,
+                response: Response<ApiResponse<List<PreferenceOption>>>
+            ) {
+                //todo 10007 token 过期 刷新页面并询问是否重新登录
+                var apiResponse : ApiResponse<List<PreferenceOption>>? = response.body()
+                var gson = Gson()
+                Log.i(tag,gson.toJson(apiResponse))
+                if(apiResponse!!.isSuccess()){
+                    dataList.postValue(apiResponse!!.data!!)
+                }else{
+                    Toast.makeText(App.instance,apiResponse.errMsg, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse<List<PreferenceOption>>>, t: Throwable) {
+                t.message?.let { Log.i(tag, it) }
+            }
+
+        })
 
     }
 

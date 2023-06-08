@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.adapter
+package com.example.myapplication.ui.home.search
 
 import android.view.View
 

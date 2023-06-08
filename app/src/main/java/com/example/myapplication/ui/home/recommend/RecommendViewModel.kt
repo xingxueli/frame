@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.ui.network.RetrofitService
 import com.example.myapplication.ui.network.RetrofitUtils
+import com.example.myapplication.ui.network.model.ApiResponse
 import com.example.myapplication.ui.network.model.CandidateFilter
 import com.example.myapplication.ui.network.model.CandidateInfoBrief
 import com.example.myapplication.ui.network.model.HomeInfoResult
@@ -29,7 +30,9 @@ class RecommendViewModel : ViewModel() {
 
     var isLoading: Boolean = false
 
-    val dataList: MutableLiveData<MutableList<CandidateInfoBrief>> = MutableLiveData()
+    val candidateDataList: MutableLiveData<MutableList<CandidateInfoBrief>> = MutableLiveData()
+
+    val recruiterDataList: MutableLiveData<MutableList<CandidateInfoBrief>> = MutableLiveData()
 
     fun initData(pageNum : Int) {
         // 执行初始化数据操作
@@ -68,34 +71,29 @@ class RecommendViewModel : ViewModel() {
 
     private fun loadData(pageNum: Int){
 
-        var homeInfoResult : HomeInfoResult? = null
         val infoResultService = RetrofitUtils.create(RetrofitService::class.java)
-        var userToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZjMzODExMzYwYjQ1NGZiNWFiYjFkYWVlM2FkNDMiLCJjcmVhdGVUaW1lIjoxNjg1MzIyODk5MDY0LCJpYXQiOjE2ODUzMjI4OTksImlzcyI6ImFwcF9pc3N1ZXIifQ.fq8B6CDkRgLDf05h-pZa62xSbSx3s7B5keb0aJa2o1o"
-        var role = 2
         var candidateFilter : CandidateFilter = CandidateFilter()
         var pageSize = 10
-        //获取user token
-//        val sharedPreferences =
-//            requireContext().getSharedPreferences(AllConfig.SHARED_PREFERENCES, Context.MODE_PRIVATE)
-//        userToken = sharedPreferences.getString(AllConfig.USER_TOKEN, "").toString()
 
-        infoResultService.getHomeInfo(userToken,role,1,54,856257309058404352,pageNum,pageSize,candidateFilter).enqueue(object : Callback<HomeInfoResult> {
+        infoResultService.getRecommendationCandidates(1,54,856257309058404352,pageNum,pageSize,candidateFilter).enqueue(object : Callback<ApiResponse<HomeInfoResult>> {
             override fun onResponse(
-                call: Call<HomeInfoResult>,
-                response: Response<HomeInfoResult>
+                call: Call<ApiResponse<HomeInfoResult>>,
+                response: Response<ApiResponse<HomeInfoResult>>
             ) {
                 //todo 10007 token 过期 刷新页面并询问是否重新登录
-                homeInfoResult = response.body()
-                var gson = Gson()
-                Log.i(tag,gson.toJson(homeInfoResult))
-                if(homeInfoResult?.code != 2000){
-                    return
+                var apiResponse : ApiResponse<HomeInfoResult>? = response.body()
+//                var gson = Gson()
+//                Log.i(tag,gson.toJson(apiResponse))
+                if(apiResponse!!.isSuccess()){
+                    candidateDataList.postValue(apiResponse!!.data!!.list)
+                    isLoading = false
+                }else{
+                    TODO()
                 }
-                dataList.postValue(homeInfoResult!!.data!!.list)
-                isLoading = false
+
             }
 
-            override fun onFailure(call: Call<HomeInfoResult>, t: Throwable) {
+            override fun onFailure(call: Call<ApiResponse<HomeInfoResult>>, t: Throwable) {
                 t.message?.let { Log.i(tag, it) }
                 isLoading = false
             }

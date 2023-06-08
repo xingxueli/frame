@@ -1,18 +1,23 @@
 package com.example.myapplication.ui.home.recommend
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentRecommendBinding
+import com.example.myapplication.ui.dashboard.preference.PreferenceListActivity
+import com.example.myapplication.ui.home.search.SearchPageActivity
+
 
 /**
  *
@@ -38,9 +43,9 @@ class RecommendFragment : Fragment() {
     private var hasNext = true
 
     companion object {
-        fun newInstance(foo: Int): RecommendFragment {
+        fun newInstance(id: Long): RecommendFragment {
             val args = Bundle()
-            args.putInt("foo", foo)
+            args.putLong("foo", id)
             val fragment = RecommendFragment()
             fragment.arguments = args
             return fragment
@@ -66,7 +71,7 @@ class RecommendFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
         // 观察数据变化
-        recommendViewModel.dataList.observe(viewLifecycleOwner) {
+        recommendViewModel.candidateDataList.observe(viewLifecycleOwner) {
             // 更新数据源
             if (currentPage == 1) {
                 // 下拉刷新
@@ -93,6 +98,8 @@ class RecommendFragment : Fragment() {
         currentPage = 1
         recommendViewModel.initData(currentPage)
 
+        //初始化menu
+//        initMenu()
     }
 
     override fun onDestroyView() {
