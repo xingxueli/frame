@@ -1,37 +1,23 @@
 package com.example.myapplication.ui.home
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.myapplication.R
-import com.example.myapplication.ui.home.search.SearchPageActivity
 import com.example.myapplication.databinding.FragmentHomeBinding
-import com.example.myapplication.ui.dashboard.preference.PreferenceListActivity
-import com.example.myapplication.ui.home.recommend.RecommendAdapter
 import com.example.myapplication.ui.home.recommend.RecommendFragment
-import com.example.myapplication.ui.network.model.CandidatePreference
-import com.example.myapplication.ui.network.model.PreferenceOption
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.gson.Gson
 
 
 class HomeFragment : Fragment(){
@@ -64,7 +50,7 @@ class HomeFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = TabLayoutChildViewPager(childFragmentManager, lifecycle)
-        homeViewModel.dataList.observe(viewLifecycleOwner){
+        homeViewModel.candidateDataList.observe(viewLifecycleOwner){
             var tabFragments = mutableListOf<Fragment>()
             var tabViews = mutableListOf<View>()
             for (preferenceOption in it) {
@@ -73,6 +59,25 @@ class HomeFragment : Fragment(){
                 tabText.text = preferenceOption.channel
                 tabViews.add(tabView)
                 tabFragments.add(RecommendFragment.newInstance(preferenceOption.preferenceId!!))
+            }
+            adapter.addFragments(tabFragments)
+            adapter.addFragmentTabViews(tabViews)
+            viewPager2.adapter = adapter
+            TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
+                tab.customView = adapter.getTabView(position)
+                viewPager2.setCurrentItem(tab.position, true)
+            }.attach()
+        }
+
+        homeViewModel.recruiterDataList.observe(viewLifecycleOwner){
+            var tabFragments = mutableListOf<Fragment>()
+            var tabViews = mutableListOf<View>()
+            for (recruiterPreference in it) {
+                val tabView: View = LayoutInflater.from(activity).inflate(R.layout.custom_tab_layout, null)
+                val tabText = tabView.findViewById<TextView>(R.id.tab_text)
+                tabText.text = recruiterPreference.channel
+                tabViews.add(tabView)
+                tabFragments.add(RecommendFragment.newInstance(recruiterPreference.jobId!!))
             }
             adapter.addFragments(tabFragments)
             adapter.addFragmentTabViews(tabViews)

@@ -1,11 +1,7 @@
 package com.example.myapplication.ui.home.recommend
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -13,10 +9,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.myapplication.R
+import com.example.myapplication.App
 import com.example.myapplication.databinding.FragmentRecommendBinding
-import com.example.myapplication.ui.dashboard.preference.PreferenceListActivity
-import com.example.myapplication.ui.home.search.SearchPageActivity
+import com.example.myapplication.ui.local.SPUtils
+import com.example.myapplication.ui.network.model.Role
 
 
 /**
@@ -33,7 +29,8 @@ class RecommendFragment : Fragment() {
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: RecommendAdapter
+    private lateinit var recommendCandidateAdapter: RecommendCandidateAdapter
+    private lateinit var recommendRecruiterAdapter: RecommendRecruiterAdapter
     private lateinit var recommendViewModel: RecommendViewModel
 
     //如何从别的地方获取数据，而不是到处写接口
@@ -65,23 +62,46 @@ class RecommendFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = RecommendAdapter()
         binding.recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.recyclerView.adapter = adapter
+        var role = SPUtils.getInt(App.instance, "X-Role", 0)
+        when(role){
+            Role.RECRUITER.id -> {
+                recommendCandidateAdapter = RecommendCandidateAdapter()
+                binding.recyclerView.adapter = recommendCandidateAdapter
+            }
+            Role.CANDIDATE.id -> {
+                recommendRecruiterAdapter = RecommendRecruiterAdapter()
+                binding.recyclerView.adapter = recommendRecruiterAdapter
+            }
+        }
 
         // 观察数据变化
         recommendViewModel.candidateDataList.observe(viewLifecycleOwner) {
             // 更新数据源
             if (currentPage == 1) {
                 // 下拉刷新
-                adapter.setData(it)
+                recommendCandidateAdapter.setCandidateData(it)
                 hasNext = true
             } else {
                 // 底部加载更多
-                adapter.addData(it)
+                recommendCandidateAdapter.addCandidateData(it)
             }
         }
+
+        // 观察数据变化
+        recommendViewModel.recruiterDataList.observe(viewLifecycleOwner) {
+            // 更新数据源
+            if (currentPage == 1) {
+                // 下拉刷新
+                recommendRecruiterAdapter.setRecruiterData(it)
+                hasNext = true
+            } else {
+                // 底部加载更多
+                recommendRecruiterAdapter.addRecruiterData(it)
+            }
+        }
+
         // 添加下拉刷新监听
         binding.swipeRefreshLayout.setOnRefreshListener {
             // 执行下拉刷新操作

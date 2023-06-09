@@ -5,7 +5,7 @@ import java.io.Serializable
 data class ApiResponse<T>(
     val code: Int,
     val message: String,
-    val errMsg: String,
+    val errMsg: Object,
     val data: T?
 ) : Serializable {
     fun isSuccess(): Boolean {

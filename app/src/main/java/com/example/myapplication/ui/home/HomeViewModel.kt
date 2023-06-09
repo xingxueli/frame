@@ -2,7 +2,6 @@ package com.example.myapplication.ui.home
 
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.App
@@ -10,8 +9,9 @@ import com.example.myapplication.ui.local.SPUtils
 import com.example.myapplication.ui.network.RetrofitService
 import com.example.myapplication.ui.network.RetrofitUtils
 import com.example.myapplication.ui.network.model.ApiResponse
-import com.example.myapplication.ui.network.model.HomeInfoResult
 import com.example.myapplication.ui.network.model.PreferenceOption
+import com.example.myapplication.ui.network.model.RecruiterPreference
+import com.example.myapplication.ui.network.model.Role
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,7 +31,8 @@ class HomeViewModel : ViewModel() {
 
     private val tag : String  = "HomeViewModel";
 
-    val dataList: MutableLiveData<List<PreferenceOption>> = MutableLiveData()
+    val candidateDataList: MutableLiveData<List<PreferenceOption>> = MutableLiveData()
+    val recruiterDataList: MutableLiveData<List<RecruiterPreference>> = MutableLiveData()
 
     fun initData() {
         var role = SPUtils.getInt(App.instance, "X-Role", 0)
@@ -41,28 +42,59 @@ class HomeViewModel : ViewModel() {
     private fun loadData(role : Int){
         val retrofitService = RetrofitUtils.create(RetrofitService::class.java)
 
-        retrofitService.getCandidateTabs().enqueue(object :
-            Callback<ApiResponse<List<PreferenceOption>>> {
-            override fun onResponse(
-                call: Call<ApiResponse<List<PreferenceOption>>>,
-                response: Response<ApiResponse<List<PreferenceOption>>>
-            ) {
-                //todo 10007 token 过期 刷新页面并询问是否重新登录
-                var apiResponse : ApiResponse<List<PreferenceOption>>? = response.body()
-                var gson = Gson()
-                Log.i(tag,gson.toJson(apiResponse))
-                if(apiResponse!!.isSuccess()){
-                    dataList.postValue(apiResponse!!.data!!)
-                }else{
-                    Toast.makeText(App.instance,apiResponse.errMsg, Toast.LENGTH_SHORT).show()
-                }
+        when(role){
+            Role.CANDIDATE.id -> {
+                retrofitService.getCandidateTabs().enqueue(object :
+                Callback<ApiResponse<List<PreferenceOption>>> {
+                    override fun onResponse(
+                        call: Call<ApiResponse<List<PreferenceOption>>>,
+                        response: Response<ApiResponse<List<PreferenceOption>>>
+                    ) {
+                        //todo 10007 token 过期 刷新页面并询问是否重新登录
+                        var apiResponse : ApiResponse<List<PreferenceOption>>? = response.body()
+                        var gson = Gson()
+                        Log.i(tag,gson.toJson(apiResponse))
+                        if(apiResponse!!.isSuccess()){
+                            candidateDataList.postValue(apiResponse!!.data!!)
+                        }else{
+                            gson = Gson()
+                            Toast.makeText(App.instance, gson.toJson(apiResponse.errMsg), Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                    override fun onFailure(call: Call<ApiResponse<List<PreferenceOption>>>, t: Throwable) {
+                        t.message?.let { Log.i(tag, it) }
+                    }
+                })
             }
-
-            override fun onFailure(call: Call<ApiResponse<List<PreferenceOption>>>, t: Throwable) {
-                t.message?.let { Log.i(tag, it) }
+            Role.RECRUITER.id -> {
+                retrofitService.getRecruiterTabs().enqueue(object :
+                    Callback<ApiResponse<List<RecruiterPreference>>> {
+                    override fun onResponse(
+                        call: Call<ApiResponse<List<RecruiterPreference>>>,
+                        response: Response<ApiResponse<List<RecruiterPreference>>>
+                    ) {
+                        //todo 10007 token 过期 刷新页面并询问是否重新登录
+                        var apiResponse: ApiResponse<List<RecruiterPreference>>? = response.body()
+                        var gson = Gson()
+                        Log.i(tag, gson.toJson(apiResponse))
+                        if (apiResponse!!.isSuccess()) {
+                            recruiterDataList.postValue(apiResponse!!.data!!)
+                        } else {
+                            gson = Gson()
+                            Toast.makeText(App.instance, gson.toJson(apiResponse.errMsg), Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                    override fun onFailure(
+                        call: Call<ApiResponse<List<RecruiterPreference>>>,
+                        t: Throwable
+                    ) {
+                        t.message?.let { Log.i(tag, it) }
+                    }
+                })
             }
-
-        })
+        }
 
     }
 

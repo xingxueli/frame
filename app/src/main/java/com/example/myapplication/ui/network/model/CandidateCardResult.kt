@@ -1,6 +1,6 @@
 package com.example.myapplication.ui.network.model
 
-class HomeInfoResult {
+class CandidateCardResult {
     var hasNext = false
     var list: MutableList<CandidateInfoBrief>? = null
 }
