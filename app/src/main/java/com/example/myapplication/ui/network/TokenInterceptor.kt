@@ -14,6 +14,8 @@ import okhttp3.MediaType
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.asResponseBody
+import okio.Source
+import okio.buffer
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.awaitResponse
@@ -59,7 +61,7 @@ class TokenInterceptor : Interceptor {
             return idToken
         }
         if (tokenExpiredLock.compareAndSet(false, true)) {
-            val infoResultService = RetrofitUtils.create(RetrofitService::class.java)
+            val infoResultService = RetrofitUtils.createNoToken(RetrofitService::class.java)
             var tokenRequestModel = TokenRequestModel()
             tokenRequestModel.refreshToken = idToken
 //            infoResultService.getNewToken(tokenRequestModel).enqueue(object :
@@ -94,7 +96,8 @@ class TokenInterceptor : Interceptor {
     }
 
     private fun isTokenExpired(response: Response) : Boolean{
-        var bodyString = response.body?.source()?.buffer?.clone()?.readString(StandardCharsets.UTF_8)
+        var source = response.body?.source() as Source
+        var bodyString = source.buffer().readString(StandardCharsets.UTF_8)
         var apiResponse = Gson().fromJson(bodyString, ApiResponse::class.java)
 
         return apiResponse.code == 20006

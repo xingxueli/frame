@@ -17,15 +17,15 @@ class LoggingInterceptor : Interceptor {
         val request = chain.request()
 
         // 打印请求信息
-//        val startTime = System.nanoTime()
-//        Log.d("Retrofit", String.format("Sending request %s on %s %n %s",
-//            request.url, chain.connection(), request.headers.toString()))
+        val startTime = System.nanoTime()
+        Log.d("Retrofit", String.format("Sending request %s on %s %n %s",
+            request.url, chain.connection(), request.headers.toString()))
 
         val response = chain.proceed(request)
         // 打印响应信息
-//        val endTime = System.nanoTime()
-//        Log.d("Retrofit", String.format("Received response for %s in %.1fms %n %s",
-//            response.request.url, (endTime - startTime) / 1e6, response.headers.toString()))
+        val endTime = System.nanoTime()
+        Log.d("Retrofit", String.format("Received response for %s in %.1fms %n %s",
+            response.request.url, (endTime - startTime) / 1e6, response.headers.toString()))
 
         return response
     }
