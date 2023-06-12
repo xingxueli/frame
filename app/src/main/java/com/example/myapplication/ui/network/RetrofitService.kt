@@ -8,6 +8,8 @@ import com.example.myapplication.ui.network.model.JobFilter
 import com.example.myapplication.ui.network.model.PreferenceOption
 import com.example.myapplication.ui.network.model.RecruiterCardResult
 import com.example.myapplication.ui.network.model.RecruiterPreference
+import com.example.myapplication.ui.network.model.TokenRequestModel
+import com.example.myapplication.ui.network.model.TokenResponseModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -16,7 +18,11 @@ import retrofit2.http.Query
 
 interface RetrofitService {
 
-    //------------ to B
+    // ------------- both role
+    @POST("login/token")
+    fun getNewToken(@Body tokenRequestModel: TokenRequestModel): Call<ApiResponse<TokenResponseModel>>
+
+    //------------ to B/
     @POST("candidate-service/candidates/recommendation")
     fun getRecommendationCandidates(@Query("type") type: Int,@Query("cityId") cityId: Int,@Query("jobId") jobId: Long,@Query("pageNum") pageNum: Int,@Query("pageSize") pageSize: Int,@Body candidateFilter: CandidateFilter): Call<ApiResponse<CandidateCardResult>>
 

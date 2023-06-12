@@ -36,6 +36,7 @@ class PreferenceListViewModel : ViewModel() {
                 //todo 10007 token 过期 刷新页面并询问是否重新登录
                 var apiResponse : ApiResponse<List<CandidatePreference>>? = response.body()
                 var gson = Gson()
+                Log.i(tag,"-----------------")
                 Log.i(tag,gson.toJson(apiResponse))
                 if(apiResponse!!.isSuccess()){
                     dataList.postValue(apiResponse!!.data!!)

@@ -1,6 +1,8 @@
 package com.example.myapplication.ui.dashboard.preference
 
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -17,21 +19,27 @@ class PreferenceListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var preferenceListAdapter: PreferenceListAdapter
+    private lateinit var preferenceListViewModel: PreferenceListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPreferenceListBinding.inflate(layoutInflater)
-        val preferenceListViewModel=
+        preferenceListViewModel=
             ViewModelProvider(this)[PreferenceListViewModel::class.java]
         recyclerView = binding.preferenceListRecycleView
-        recyclerView!!.layoutManager =
+        recyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
         preferenceListAdapter = PreferenceListAdapter()
-        recyclerView!!.adapter = preferenceListAdapter
-        preferenceListViewModel.initData()
+        recyclerView.adapter = preferenceListAdapter
+
         preferenceListViewModel.dataList.observe(this){
-            preferenceListAdapter?.setData(it)
+            preferenceListAdapter.setData(it)
         }
+
+        supportActionBar?.hide()
+
+        preferenceListViewModel.initData()
 
         setContentView(binding.root)
     }

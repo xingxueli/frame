@@ -8,10 +8,14 @@ import java.util.concurrent.TimeUnit
 object RetrofitUtils {
     private val BASE_URL = "https://ustest.workandroid.com/hy/"//根路径 这里我就不明示了，毕竟涉及公司
 
+    private val headerInterceptor = HeaderInterceptor()
+    private val tokenInterceptor = TokenInterceptor()
     private val loggingInterceptor = LoggingInterceptor()
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor) // 添加自定义拦截器,可以添加多个，但没必要
+        .addInterceptor(headerInterceptor)
+        .addInterceptor(tokenInterceptor)
+        .addInterceptor(loggingInterceptor)
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .build()
