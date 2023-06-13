@@ -35,6 +35,7 @@ object RetrofitUtils {
 
     private val noTokenRetrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
+        .client(okHttpClientNoToken)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

@@ -14,6 +14,7 @@ import okhttp3.MediaType
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.asResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Source
 import okio.buffer
 import retrofit2.Call
@@ -38,17 +39,21 @@ class TokenInterceptor : Interceptor {
         val request = chain.request()
 
         var response = chain.proceed(request)
-        if(isTokenExpired(response)){
+        var responseString = getResponseString(response)
+        if(isTokenExpired(responseString)){
             var newToken = getNewToken()
             if(newToken.isNotEmpty()){
                 var newRequest = request.newBuilder()
+                    .removeHeader(Headers.ID_TOKEN)
                     .addHeader(Headers.ID_TOKEN, newToken)
                     .build();
-                response.close();
                 return chain.proceed(newRequest);
             }else{
                 TODO("to login page")
             }
+        }else{
+            var newResponse = response.newBuilder().body(responseString.toResponseBody()).build()
+            return newResponse
         }
 
         return response
@@ -61,27 +66,10 @@ class TokenInterceptor : Interceptor {
             return idToken
         }
         if (tokenExpiredLock.compareAndSet(false, true)) {
-            val infoResultService = RetrofitUtils.createNoToken(RetrofitService::class.java)
+            val infoResultService = RetrofitUtils.createNoToken(NoTokenRetrofitService::class.java)
             var tokenRequestModel = TokenRequestModel()
             tokenRequestModel.refreshToken = idToken
-//            infoResultService.getNewToken(tokenRequestModel).enqueue(object :
-//                Callback<ApiResponse<TokenResponseModel>> {
-//                override fun onResponse(
-//                    call: Call<ApiResponse<TokenResponseModel>>,
-//                    response: retrofit2.Response<ApiResponse<TokenResponseModel>>
-//                ) {
-//                    var apiResponse : ApiResponse<TokenResponseModel>? = response.body()
-//                    if(apiResponse!!.isSuccess()){
-//                        idToken = apiResponse.data?.idToken.toString()
-//                        SPUtils.putString(App.instance, Headers.ID_TOKEN, idToken)
-//                    }else{
-//                        TODO()
-//                    }
-//                }
-//                override fun onFailure(call: Call<ApiResponse<TokenResponseModel>>, t: Throwable) {
-//                    t.message?.let { Log.i(tag, it) }
-//                }
-//            })
+
             var response = infoResultService.getNewToken(tokenRequestModel).execute()
             var apiResponse : ApiResponse<TokenResponseModel>? = response.body()
             return if (apiResponse != null) {
@@ -95,13 +83,14 @@ class TokenInterceptor : Interceptor {
             return idToken!!
     }
 
-    private fun isTokenExpired(response: Response) : Boolean{
-        var source = response.body?.source() as Source
-        var bodyString = source.buffer().readString(StandardCharsets.UTF_8)
-        var apiResponse = Gson().fromJson(bodyString, ApiResponse::class.java)
+    private fun isTokenExpired(responseString: String) : Boolean{
+        var apiResponse = Gson().fromJson(responseString, ApiResponse::class.java)
 
         return apiResponse.code == 20006
     }
 
-
+    private fun getResponseString(response: Response) : String{
+        var source = response.body?.source() as Source
+        return source.buffer().readString(StandardCharsets.UTF_8)
+    }
 }

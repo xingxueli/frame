@@ -19,8 +19,8 @@ class CandidatePreference {
     var salaryMin: Int? = null
     var salaryMax: Int? = null
     var salaryUnit: Int? = null
-    var createTime: Date? = null
-    var updateTime: Date? = null
+    var createTime: String? = null
+    var updateTime: String? = null
 
     var buildJobClassification: String? = null
     var isDeleted: Boolean? = null

@@ -32,11 +32,11 @@ class HeaderInterceptor : Interceptor {
      *     CANDIDATE(2);
      */
     private fun assembleRequest(request: Request): Request {
-        var tempc =
-            "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMGJmNWIwNDFmYzBiNGQ2Njg3MTc2ZTk0ZmYzYTYiLCJjcmVhdGVUaW1lIjoxNjg2MTg4NTg0NzE4LCJpYXQiOjE2ODYxODg1ODQsImlzcyI6ImFwcF9pc3N1ZXIifQ.BhsxTG7Jgu7CTnY2kuvcr4qGoZk47wW4qdt9OUKivD4";
-        SPUtils.putString(App.instance, Headers.ID_TOKEN, tempc);
-        var tempRoleC = 2
-        SPUtils.putInt(App.instance, Headers.ROLE, tempRoleC);
+//        var tempc =
+//            "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMGJmNWIwNDFmYzBiNGQ2Njg3MTc2ZTk0ZmYzYTYiLCJjcmVhdGVUaW1lIjoxNjg2MTg4NTg0NzE4LCJpYXQiOjE2ODYxODg1ODQsImlzcyI6ImFwcF9pc3N1ZXIifQ.BhsxTG7Jgu7CTnY2kuvcr4qGoZk47wW4qdt9OUKivD4";
+//        SPUtils.putString(App.instance, Headers.ID_TOKEN, tempc);
+//        var tempRoleC = 2
+//        SPUtils.putInt(App.instance, Headers.ROLE, tempRoleC);
 //        var tempb =
 //            "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZjJhYWQ0ZTU0YTFjNDBlNmE3ODM4YTExOGJkNDciLCJjcmVhdGVUaW1lIjoxNjg2MjE1NTQ0NjI0LCJpYXQiOjE2ODYyMTU1NDQsImlzcyI6ImFwcF9pc3N1ZXIifQ.NCV0a2i85nExEoiJJio68D8I1R8ZN3f3GHyaoXIjzOI";
 //        SPUtils.putString(App.instance, Headers.ID_TOKEN, tempb);

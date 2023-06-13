@@ -15,6 +15,7 @@ import com.example.myapplication.ui.network.model.JobBriefWithAnalysis
 import com.example.myapplication.ui.network.model.JobFilter
 import com.example.myapplication.ui.network.model.RecruiterCardResult
 import com.example.myapplication.ui.network.model.Role
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,6 +34,8 @@ class RecommendViewModel : ViewModel() {
 
     private val tag : String  = "RecommendViewModel";
 
+    private val pageSize : Int  = 20;
+
     var isLoading: Boolean = false
 
     val candidateDataList: MutableLiveData<MutableList<CandidateInfoBrief>> = MutableLiveData()
@@ -48,7 +51,7 @@ class RecommendViewModel : ViewModel() {
         // 加载完成后更新 dataList，并将 isLoading 设置为 false
         // 例如，你可以在这里发起网络请求或从数据库中加载数据
         // 加载完成后，通过调用 dataList.postValue(dataListValue) 来更新数据
-        loadData(pageNum)
+        loadData(pageNum,pageSize)
 
     }
 
@@ -59,7 +62,7 @@ class RecommendViewModel : ViewModel() {
 
         // 模拟刷新数据的操作
         // 刷新完成后更新 dataList，并将 isLoading 设置为 false
-        loadData(1)
+        loadData(1,pageSize)
 
     }
 
@@ -70,18 +73,17 @@ class RecommendViewModel : ViewModel() {
 
         // 模拟加载更多数据的操作
         // 加载完成后更新 dataList，并将 isLoading 设置为 false
-        loadData(pageNum)
+        loadData(pageNum,pageSize)
 
     }
 
-    private fun loadData(pageNum: Int){
+    private fun loadData(pageNum: Int,pageSize: Int){
 
         var role = SPUtils.getInt(App.instance, "X-Role", 0)
         val infoResultService = RetrofitUtils.create(RetrofitService::class.java)
         when(role){
             Role.RECRUITER.id -> {
                 var candidateFilter : CandidateFilter = CandidateFilter()
-                var pageSize = 10
                 infoResultService.getRecommendationCandidates(1,54,856257309058404352,pageNum,pageSize,candidateFilter).enqueue(object : Callback<ApiResponse<CandidateCardResult>> {
                     override fun onResponse(
                         call: Call<ApiResponse<CandidateCardResult>>,
@@ -105,7 +107,6 @@ class RecommendViewModel : ViewModel() {
             }
             Role.CANDIDATE.id -> {
                 var jobFilter : JobFilter = JobFilter()
-                var pageSize = 10
                 infoResultService.getRecommendationRecruiters(1,640,856250263214886912,pageNum,pageSize,jobFilter).enqueue(object : Callback<ApiResponse<RecruiterCardResult>> {
                     override fun onResponse(
                         call: Call<ApiResponse<RecruiterCardResult>>,
@@ -117,7 +118,7 @@ class RecommendViewModel : ViewModel() {
                             recruiterDataList.postValue(apiResponse!!.data!!.list)
                             isLoading = false
                         }else{
-                            TODO()
+                            Log.i(tag, Gson().toJson(apiResponse))
                         }
                     }
                     override fun onFailure(call: Call<ApiResponse<RecruiterCardResult>>, t: Throwable) {

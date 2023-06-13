@@ -18,9 +18,6 @@ import retrofit2.http.Query
 
 interface RetrofitService {
 
-    // ------------- both role
-    @POST("login/token")
-    fun getNewToken(@Body tokenRequestModel: TokenRequestModel): Call<ApiResponse<TokenResponseModel>>
 
     //------------ to B/
     @POST("candidate-service/candidates/recommendation")
