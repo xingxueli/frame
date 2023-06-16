@@ -13,6 +13,7 @@ import com.example.myapplication.App
 import com.example.myapplication.databinding.FragmentRecommendBinding
 import com.example.myapplication.ui.local.SPUtils
 import com.example.myapplication.ui.network.model.Role
+import kotlin.properties.Delegates
 
 
 /**
@@ -32,6 +33,7 @@ class RecommendFragment : Fragment() {
     private lateinit var recommendCandidateAdapter: RecommendCandidateAdapter
     private lateinit var recommendRecruiterAdapter: RecommendRecruiterAdapter
     private lateinit var recommendViewModel: RecommendViewModel
+    private var id by Delegates.notNull<Long>()
 
     //如何从别的地方获取数据，而不是到处写接口
 //    val sharedViewModel: SharedViewModel by viewModels()
@@ -57,6 +59,7 @@ class RecommendFragment : Fragment() {
         recommendViewModel =
             ViewModelProvider(this).get(RecommendViewModel::class.java)
         _binding = FragmentRecommendBinding.inflate(inflater, container, false)
+        id = this.arguments?.getLong("foo")!!
         return binding.root
     }
 
@@ -106,7 +109,7 @@ class RecommendFragment : Fragment() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             // 执行下拉刷新操作
             currentPage = 1
-            recommendViewModel.refreshData()
+            recommendViewModel.refreshData(id)
 
             // 刷新完成后，停止刷新动画
             binding.swipeRefreshLayout.isRefreshing = false
@@ -116,7 +119,7 @@ class RecommendFragment : Fragment() {
 
         // 初始化数据
         currentPage = 1
-        recommendViewModel.initData(currentPage)
+        recommendViewModel.initData(currentPage,id)
 
         //初始化menu
 //        initMenu()
@@ -143,7 +146,7 @@ class RecommendFragment : Fragment() {
                 if (hasNext && !recommendViewModel.isLoading && visibleItemCount + firstVisibleItemPosition >= totalItemCount - threshold && firstVisibleItemPosition >= 0) {
                     // 滚动到列表底部，执行底部加载更多操作
                     currentPage++
-                    recommendViewModel.loadMoreData(currentPage)
+                    recommendViewModel.loadMoreData(currentPage,id)
                 }
             }
         })

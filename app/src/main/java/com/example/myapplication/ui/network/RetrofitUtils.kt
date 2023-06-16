@@ -6,9 +6,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitUtils {
-    private val BASE_URL = "https://ustest.workandroid.com/hy/"//根路径 这里我就不明示了，毕竟涉及公司
+    private val BASE_URL = "https://ustest.workandroid.com/hy/"
 
     private val headerInterceptor = HeaderInterceptor()
+    private val noTokenHeaderInterceptor = HeaderInterceptor()
     private val tokenInterceptor = TokenInterceptor()
     private val loggingInterceptor = LoggingInterceptor()
 
@@ -27,7 +28,7 @@ object RetrofitUtils {
         .build()
 
     private val okHttpClientNoToken: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(headerInterceptor)
+        .addInterceptor(noTokenHeaderInterceptor)
         .addInterceptor(loggingInterceptor)
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)

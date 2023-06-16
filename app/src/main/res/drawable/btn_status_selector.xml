@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--一般正常状态在后，特殊状态在前，这里无法点击是特殊状态放前面-->
+    <!--btn_status_selector.xml-->
+    <item android:drawable="@color/yellow" android:state_enabled="false"/>
+    <item android:drawable="@color/black" android:state_enabled="true"/>
+</selector>

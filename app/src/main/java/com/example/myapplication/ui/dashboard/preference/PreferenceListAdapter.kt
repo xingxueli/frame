@@ -34,9 +34,7 @@ class PreferenceListAdapter : RecyclerView.Adapter<PreferenceListAdapter.ViewHol
         viewHolder.itemView.setOnClickListener {
             var position = viewHolder.adapterPosition
             var item = dataList[position]
-            if (item != null) {
-                Toast.makeText(parent.context,"你点击的简历是${item.id}",Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(parent.context,"你点击的简历是${item.id}",Toast.LENGTH_SHORT).show()
         }
         return viewHolder
     }

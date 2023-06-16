@@ -39,7 +39,7 @@ class PreferenceListViewModel : ViewModel() {
                 Log.i(tag,"-----------------")
                 Log.i(tag,gson.toJson(apiResponse))
                 if(apiResponse!!.isSuccess()){
-                    dataList.postValue(apiResponse!!.data!!)
+                    dataList.postValue(apiResponse.data!!)
                 }else{
                     gson = Gson()
                     Toast.makeText(App.instance, gson.toJson(apiResponse.errMsg), Toast.LENGTH_SHORT)

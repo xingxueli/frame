@@ -3,11 +3,9 @@ package com.example.myapplication.ui.network
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import com.example.myapplication.App
 import com.example.myapplication.ui.local.SPUtils
 import com.example.myapplication.ui.network.model.Headers
-import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -22,7 +20,7 @@ import java.util.Locale
  *
  *  相当于log、header、response统一处理
  */
-class HeaderInterceptor : Interceptor {
+class NoTokenHeaderInterceptor : Interceptor {
 
     private val tag = this::class.java.simpleName
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -39,22 +37,9 @@ class HeaderInterceptor : Interceptor {
      *     CANDIDATE(2);
      */
     private fun assembleRequest(request: Request): Request {
-//        var tempc =
-//            "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMGJmNWIwNDFmYzBiNGQ2Njg3MTc2ZTk0ZmYzYTYiLCJjcmVhdGVUaW1lIjoxNjg2MTg4NTg0NzE4LCJpYXQiOjE2ODYxODg1ODQsImlzcyI6ImFwcF9pc3N1ZXIifQ.BhsxTG7Jgu7CTnY2kuvcr4qGoZk47wW4qdt9OUKivD4";
-//        SPUtils.putString(App.instance, Headers.ID_TOKEN, tempc);
-//        var tempRoleC = 2
-//        SPUtils.putInt(App.instance, Headers.ROLE, tempRoleC);
-//        var tempb =
-//            "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZjJhYWQ0ZTU0YTFjNDBlNmE3ODM4YTExOGJkNDciLCJjcmVhdGVUaW1lIjoxNjg2MjE1NTQ0NjI0LCJpYXQiOjE2ODYyMTU1NDQsImlzcyI6ImFwcF9pc3N1ZXIifQ.NCV0a2i85nExEoiJJio68D8I1R8ZN3f3GHyaoXIjzOI";
-//        SPUtils.putString(App.instance, Headers.ID_TOKEN, tempb);
-//        var tempRoleB = 1
-//        SPUtils.putInt(App.instance, Headers.ROLE, tempRoleB);
+
         var newBuilder = request.newBuilder()
-        val idToken = SPUtils.getString(App.instance, Headers.ID_TOKEN, "")
-        if (idToken!!.isNotEmpty()) {
-            newBuilder.addHeader(Headers.ID_TOKEN, idToken)
-        }
-        val role = SPUtils.getInt(App.instance, Headers.ROLE, 2)
+        var role = SPUtils.getInt(App.instance, "X-Role", 2)
         if (role != 0) {
             newBuilder.addHeader(Headers.ROLE, role.toString())
         }
@@ -135,7 +120,6 @@ class HeaderInterceptor : Interceptor {
             SPUtils.putString(App.instance,Headers.LANGUAGE,newLanguage)
             newBuilder.addHeader(Headers.LANGUAGE, newLanguage)
         }
-
         return newBuilder.build();
     }
 
