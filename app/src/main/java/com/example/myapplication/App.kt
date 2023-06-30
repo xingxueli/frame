@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.app.Application
+import android.content.Context
 
 class App : Application() {
 
@@ -25,5 +26,8 @@ class App : Application() {
     //Companion Object中定义的成员类似于Java中的静态成员，因为Kotlin中没有static成员
     companion object {
         lateinit var instance: App
+        fun getContext(): Context {
+            return instance.applicationContext
+        }
     }
 }

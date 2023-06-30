@@ -1,15 +1,16 @@
 package com.example.myapplication.ui.network
 
 import com.example.myapplication.ui.network.model.ApiResponse
+import com.example.myapplication.ui.network.model.BaseDictModel
 import com.example.myapplication.ui.network.model.CandidateFilter
 import com.example.myapplication.ui.network.model.CandidatePreference
 import com.example.myapplication.ui.network.model.CandidateCardResult
+import com.example.myapplication.ui.network.model.JobClassificationVO
 import com.example.myapplication.ui.network.model.JobFilter
 import com.example.myapplication.ui.network.model.PreferenceOption
 import com.example.myapplication.ui.network.model.RecruiterCardResult
 import com.example.myapplication.ui.network.model.RecruiterPreference
-import com.example.myapplication.ui.network.model.TokenRequestModel
-import com.example.myapplication.ui.network.model.TokenResponseModel
+import com.example.myapplication.ui.network.model.SysDeptModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -19,6 +20,17 @@ import retrofit2.http.Query
 interface RetrofitService {
 
 
+    @GET("basedict-service/dict/search/jobClassification")
+    fun searchIndustry(@Query("channelName") channelName: String): Call<ApiResponse<List<JobClassificationVO>>>
+
+    @GET("basedict-service/dict/v1/salary")
+    fun searchSalary(@Query("role") role: Int): Call<ApiResponse<List<BaseDictModel>>>
+
+    @GET("basedict-service/search/jobClassification")
+    fun searchChannel(@Query("channelName") channelName: String): Call<ApiResponse<List<JobClassificationVO>>>
+
+    @GET("basedict-service/dept/search")
+    fun searchCity(@Query("keywords") keywords: String): Call<ApiResponse<List<SysDeptModel>>>
     //------------ to B/
     @POST("candidate-service/candidates/recommendation")
     fun getRecommendationCandidates(@Query("type") type: Int,@Query("cityId") cityId: Int,@Query("jobId") jobId: Long,@Query("pageNum") pageNum: Int,@Query("pageSize") pageSize: Int,@Body candidateFilter: CandidateFilter): Call<ApiResponse<CandidateCardResult>>

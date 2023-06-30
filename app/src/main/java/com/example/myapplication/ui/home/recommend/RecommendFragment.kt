@@ -59,7 +59,7 @@ class RecommendFragment : Fragment() {
         recommendViewModel =
             ViewModelProvider(this).get(RecommendViewModel::class.java)
         _binding = FragmentRecommendBinding.inflate(inflater, container, false)
-        id = this.arguments?.getLong("foo")!!
+        id = this.requireArguments().getLong("foo")
         return binding.root
     }
 

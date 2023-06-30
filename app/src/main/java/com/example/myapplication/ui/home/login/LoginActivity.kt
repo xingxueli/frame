@@ -1,12 +1,17 @@
 package com.example.myapplication.ui.home.login
 
+import android.app.Dialog
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -57,6 +62,15 @@ class LoginActivity : AppCompatActivity(),View.OnClickListener {
                 Log.i(tag,it.message)
                 Toast.makeText(this, it.message, Toast.LENGTH_SHORT)
                     .show()
+            }
+        }
+
+        // 获取数据
+        intent.getIntExtra("apiResponseCode",2000).also {
+            Log.i(tag,"$it")
+            if (it == 10004) {
+                val updateDialog = createUpdateDialog(this)
+                updateDialog.show()
             }
         }
 
@@ -122,5 +136,38 @@ class LoginActivity : AppCompatActivity(),View.OnClickListener {
         }
     }
 
+    private fun createUpdateDialog(context: Context): Dialog {
+        val dialog = Dialog(context)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_update) // 替换为自定义的布局文件
+
+        val titleTextView = dialog.findViewById<TextView>(R.id.titleTextView)
+        val messageTextView = dialog.findViewById<TextView>(R.id.messageTextView)
+        val updateButton = dialog.findViewById<Button>(R.id.updateButton)
+
+        titleTextView.text = "强制更新"
+        messageTextView.text = "发现新版本，请立即更新以继续使用。"
+
+        updateButton.setOnClickListener {
+            // 执行更新操作
+            // 这里可以跳转到应用商店或下载最新版本的 APK 文件等操作
+            // 示例：跳转到应用商店
+            val appPackageName = context.packageName
+            try {
+                val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
+                marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(marketIntent)
+            } catch (e: ActivityNotFoundException) {
+                val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName"))
+                webIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(webIntent)
+            }
+
+            dialog.dismiss()
+        }
+
+        return dialog
+    }
 
 }

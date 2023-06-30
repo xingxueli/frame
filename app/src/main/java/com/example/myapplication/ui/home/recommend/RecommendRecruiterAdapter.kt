@@ -38,7 +38,7 @@ class RecommendRecruiterAdapter : RecyclerView.Adapter<RecommendRecruiterAdapter
             if(recruiterDataList.size > 0){
                 var jobBriefWithAnalysis = recruiterDataList[position]
                 if (jobBriefWithAnalysis != null) {
-                    Toast.makeText(parent.context,"你点击的preferenceID是${jobBriefWithAnalysis.id}",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(parent.context,"你点击的jobId是${jobBriefWithAnalysis.id}",Toast.LENGTH_SHORT).show()
                 }
             }
         }

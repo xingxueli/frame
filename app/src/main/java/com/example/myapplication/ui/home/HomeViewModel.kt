@@ -9,6 +9,7 @@ import com.example.myapplication.ui.local.SPUtils
 import com.example.myapplication.ui.network.RetrofitService
 import com.example.myapplication.ui.network.RetrofitUtils
 import com.example.myapplication.ui.network.model.ApiResponse
+import com.example.myapplication.ui.network.model.Headers
 import com.example.myapplication.ui.network.model.PreferenceOption
 import com.example.myapplication.ui.network.model.RecruiterPreference
 import com.example.myapplication.ui.network.model.Role
@@ -35,7 +36,7 @@ class HomeViewModel : ViewModel() {
     val recruiterDataList: MutableLiveData<List<RecruiterPreference>> = MutableLiveData()
 
     fun initData() {
-        var role = SPUtils.getInt(App.instance, "X-Role", 0)
+        var role = SPUtils.getInt(App.instance, Headers.ROLE, 0)
         loadData(role)
     }
 
@@ -74,7 +75,6 @@ class HomeViewModel : ViewModel() {
                         call: Call<ApiResponse<List<RecruiterPreference>>>,
                         response: Response<ApiResponse<List<RecruiterPreference>>>
                     ) {
-                        //todo 10007 token 过期 刷新页面并询问是否重新登录
                         var apiResponse: ApiResponse<List<RecruiterPreference>>? = response.body()
                         var gson = Gson()
                         Log.i(tag, gson.toJson(apiResponse))

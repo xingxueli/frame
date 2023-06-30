@@ -48,7 +48,6 @@ class VerifyViewModel : ViewModel() {
                         val data = apiResponse.data
                         if (data != null) {
                             dataList.postValue(data!!)
-                            SPUtils.putString(App.instance, Headers.ID_TOKEN, data.idToken)
                         }
                     }else{
                         Toast.makeText(App.instance, apiResponse.message, Toast.LENGTH_SHORT)

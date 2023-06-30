@@ -13,8 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
+<!--        android:name=".ui.home.login.RoleActivity"-->
         <activity
-            android:name=".ui.home.login.LoginActivity"
+            android:name=".ui.dashboard.preference.PreferenceListActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
@@ -24,10 +25,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.home.login.LoginActivity"/>
         <activity android:name=".ui.home.search.SearchPageActivity"/>
-        <activity android:name=".ui.dashboard.preference.PreferenceListActivity"/>
+<!--        <activity android:name=".ui.dashboard.preference.PreferenceListActivity"/>-->
+        <activity android:name=".ui.dashboard.preference.PreferenceEditActivity"/>
         <activity android:name=".MainActivity"/>
         <activity android:name=".ui.home.login.VerifyActivity"/>
+        <activity android:name=".ui.dashboard.preference.CitySearchPageActivity"/>
+        <activity android:name=".ui.dashboard.preference.ChannelSearchPageActivity"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

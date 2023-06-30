@@ -1,7 +1,10 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name"></string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <string name="part_time">part-time</string>
+    <string name="full_time">full-time</string>
+    <string name="salary_title">Expected Annual Salary</string>
 </resources>

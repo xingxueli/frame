@@ -41,7 +41,7 @@ class RecommendCandidateAdapter : RecyclerView.Adapter<RecommendCandidateAdapter
             if(candidateDataList.size > 0){
                 var candidateInfoBrief = candidateDataList.get(position)
                 if (candidateInfoBrief != null) {
-                    Toast.makeText(parent.context,"你点击的preferenceID是${candidateInfoBrief.preferenceId}",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(parent.context,"你点击的preferenceId是${candidateInfoBrief.preferenceId}",Toast.LENGTH_SHORT).show()
                 }
             }
         }

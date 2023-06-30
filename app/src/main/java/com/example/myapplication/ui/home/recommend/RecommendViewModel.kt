@@ -89,13 +89,12 @@ class RecommendViewModel : ViewModel() {
                         call: Call<ApiResponse<CandidateCardResult>>,
                         response: Response<ApiResponse<CandidateCardResult>>
                     ) {
-                        //todo 10007 token 过期 刷新页面并询问是否重新登录
                         var apiResponse : ApiResponse<CandidateCardResult>? = response.body()
                         if(apiResponse!!.isSuccess()){
                             candidateDataList.postValue(apiResponse!!.data!!.list)
                             isLoading = false
                         }else{
-                            TODO()
+                            Log.i(tag,"message")
                         }
 
                     }
@@ -107,7 +106,7 @@ class RecommendViewModel : ViewModel() {
             }
             Role.CANDIDATE.id -> {
                 var jobFilter : JobFilter = JobFilter()
-                infoResultService.getRecommendationRecruiters(1,640,id,pageNum,pageSize,jobFilter).enqueue(object : Callback<ApiResponse<RecruiterCardResult>> {
+                infoResultService.getRecommendationRecruiters(1,54,id,pageNum,pageSize,jobFilter).enqueue(object : Callback<ApiResponse<RecruiterCardResult>> {
                     override fun onResponse(
                         call: Call<ApiResponse<RecruiterCardResult>>,
                         response: Response<ApiResponse<RecruiterCardResult>>

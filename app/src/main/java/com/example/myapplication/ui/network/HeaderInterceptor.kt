@@ -54,7 +54,7 @@ class HeaderInterceptor : Interceptor {
         if (idToken!!.isNotEmpty()) {
             newBuilder.addHeader(Headers.ID_TOKEN, idToken)
         }
-        val role = SPUtils.getInt(App.instance, Headers.ROLE, 2)
+        val role = SPUtils.getInt(App.instance, Headers.ROLE, 0)
         if (role != 0) {
             newBuilder.addHeader(Headers.ROLE, role.toString())
         }
@@ -77,15 +77,15 @@ class HeaderInterceptor : Interceptor {
         if (appVersion!!.isNotEmpty()) {
             newBuilder.addHeader(Headers.APP_VERSION, appVersion)
         }else{
-            SPUtils.putString(App.instance,Headers.APP_VERSION,"1.0.9")
-            newBuilder.addHeader(Headers.APP_VERSION, "1.0.9")
+            SPUtils.putString(App.instance,Headers.APP_VERSION,"2.5.9")
+            newBuilder.addHeader(Headers.APP_VERSION, "2.5.9")
         }
         val bundleId = SPUtils.getString(App.instance, Headers.BUNDLE_ID, "")
         if (bundleId!!.isNotEmpty()) {
             newBuilder.addHeader(Headers.BUNDLE_ID, bundleId)
         }else{
-            SPUtils.putString(App.instance,Headers.BUNDLE_ID,"com.buildidid.app")
-            newBuilder.addHeader(Headers.BUNDLE_ID, "com.buildidid.app")
+            SPUtils.putString(App.instance,Headers.BUNDLE_ID,"are.you.happy")
+            newBuilder.addHeader(Headers.BUNDLE_ID, "are.you.happy")
         }
         val osVersion = SPUtils.getString(App.instance, Headers.OS_VERSION, "")
         if (osVersion!!.isNotEmpty()) {

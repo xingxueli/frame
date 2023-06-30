@@ -1,16 +1,17 @@
 package com.example.myapplication.ui.network
 
+import com.example.myapplication.App
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitUtils {
-    private val BASE_URL = "https://ustest.workandroid.com/hy/"
+    private val BASE_URL = "https://test.hirect.ai/hirect/"
 
     private val headerInterceptor = HeaderInterceptor()
     private val noTokenHeaderInterceptor = HeaderInterceptor()
-    private val tokenInterceptor = TokenInterceptor()
+    private val tokenInterceptor = TokenInterceptor(App.getContext())
     private val loggingInterceptor = LoggingInterceptor()
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()

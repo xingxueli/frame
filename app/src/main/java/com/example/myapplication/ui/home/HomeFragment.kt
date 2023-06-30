@@ -2,6 +2,7 @@ package com.example.myapplication.ui.home
 
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -129,6 +130,7 @@ class HomeFragment : Fragment(){
                 val tabText = tabView?.findViewById<TextView>(com.example.myapplication.R.id.tab_text)
                 if (tabText != null) {
                     tabText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
+                    tabText.gravity = Gravity.START
                 }
             } else {
 //                tabView.setScaleX(1.1f);
@@ -137,6 +139,7 @@ class HomeFragment : Fragment(){
                 if (tabText != null) {
                     tabText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18F)
                     tabText?.paint?.isFakeBoldText = true
+                    tabText.gravity = Gravity.START
                 }
             }
             return tabView
@@ -177,6 +180,7 @@ class HomeFragment : Fragment(){
         if (tabText2 != null) {
             tabText2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18F)
             tabText2?.paint?.isFakeBoldText = true
+            tabText2.gravity = Gravity.START
         }
     }
 
@@ -199,6 +203,7 @@ class HomeFragment : Fragment(){
         if (tabText2 != null) {
             tabText2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
             tabText2?.paint?.isFakeBoldText = false
+            tabText2.gravity = Gravity.START
         }
     }
 

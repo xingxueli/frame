@@ -1,7 +1,5 @@
 package com.example.myapplication.ui.network.model
 
-import java.util.Date
-
 class CandidatePreference {
     var id: Long? = null
     var jobType: String? = null

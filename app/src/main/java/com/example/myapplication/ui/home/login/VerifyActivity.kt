@@ -12,10 +12,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.myapplication.App
 import com.example.myapplication.MainActivity
 import com.example.myapplication.databinding.LoginActivityBinding
 import com.example.myapplication.databinding.VerifyActivityBinding
 import com.example.myapplication.ui.home.HomeFragment
+import com.example.myapplication.ui.local.SPUtils
+import com.example.myapplication.ui.network.model.Headers
 
 
 class VerifyActivity : AppCompatActivity() {
@@ -25,12 +28,14 @@ class VerifyActivity : AppCompatActivity() {
     private lateinit var binding: VerifyActivityBinding
     private lateinit var otpTextView: EditText
     private lateinit var verifyViewModel: VerifyViewModel
+    private lateinit var loginViewModel: LoginViewModel
     private lateinit var textView1 :TextView
     private lateinit var textView2 :TextView
     private lateinit var textView3 :TextView
     private lateinit var textView4 :TextView
     private lateinit var textView5 :TextView
     private lateinit var textView6 :TextView
+    private lateinit var textView9 :TextView
 
     private lateinit var mobile :String
     // 保存所有显示验证码的textView
@@ -52,8 +57,8 @@ class VerifyActivity : AppCompatActivity() {
         textView6 = binding.textView6
         otpTextView = binding.editTextNumber
 
-        verifyViewModel=
-            ViewModelProvider(this)[VerifyViewModel::class.java]
+        verifyViewModel = ViewModelProvider(this)[VerifyViewModel::class.java]
+        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
 
         // 获取数据
         intent.getStringExtra("mobile").also {
@@ -63,12 +68,17 @@ class VerifyActivity : AppCompatActivity() {
             }
         }
 
+        textView9 = binding.textView9
+        textView9.setOnClickListener {
+            loginViewModel.initData(mobile)
+        }
+
         verifyViewModel.dataList.observe(this){
-            Log.i(tag,"$it")
             if(it != null){
+                //更新token、role等信息
+                SPUtils.putString(App.instance, Headers.ID_TOKEN, it.idToken)
+
                 val intent = Intent(this, MainActivity::class.java)
-//                intent.putExtra(KEY_LOGIN_NAME, otpTextView.text.toString())
-//                intent.putExtra(KEY_LOGIN_PSD, etLoginPsd.text.toString())
                 startActivity(intent)
             }
         }

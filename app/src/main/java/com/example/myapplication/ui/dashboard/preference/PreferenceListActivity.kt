@@ -1,9 +1,7 @@
 package com.example.myapplication.ui.dashboard.preference
 
-import android.content.Context
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,7 +11,7 @@ import com.example.myapplication.databinding.ActivityPreferenceListBinding
 
 class PreferenceListActivity : AppCompatActivity() {
 
-    private val tag : String  = "PreferenceListActivity";
+    private val tag : String  = this::class.java.simpleName
 
     private lateinit var binding: ActivityPreferenceListBinding
 
@@ -24,6 +22,8 @@ class PreferenceListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPreferenceListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         preferenceListViewModel=
             ViewModelProvider(this)[PreferenceListViewModel::class.java]
         recyclerView = binding.preferenceListRecycleView
@@ -37,17 +37,18 @@ class PreferenceListActivity : AppCompatActivity() {
             preferenceListAdapter.setData(it)
         }
 
-        supportActionBar?.hide()
+//        supportActionBar?.elevation = 0.0f
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         preferenceListViewModel.initData()
-
-        setContentView(binding.root)
     }
 
-    fun onClick(view: View) {
-        when (view) {
-            binding.preferenceListBack -> finish()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            finish()
+            return true
         }
+        return super.onOptionsItemSelected(item)
     }
 
 }

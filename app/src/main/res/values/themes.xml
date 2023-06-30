@@ -12,11 +12,17 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+<!--        <item name="android:windowBackground">@color/white</item>-->
+<!--        <item name="android:homeAsUpIndicator">@drawable/search_back_24dp</item>-->
     </style>
 
-<!--    <style name="LineHorizontal">-->
-<!--        <item name="android:layout_width">match_parent</item>-->
-<!--        <item name="android:layout_height">1px</item>-->
-<!--        <item name="android:background">#e0e0e0</item>-->
-<!--    </style>-->
+    <style name="LineHorizontal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:layout_marginTop">20px</item>
+        <item name="android:layout_marginLeft">10px</item>
+        <item name="android:layout_marginRight">10px</item>
+        <item name="android:background">?android:attr/listDivider</item>
+    </style>
+
 </resources>
