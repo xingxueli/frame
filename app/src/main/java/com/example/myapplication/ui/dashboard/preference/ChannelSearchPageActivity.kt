@@ -1,13 +1,16 @@
 package com.example.myapplication.ui.dashboard.preference
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ActivitySearchChannelPageBinding
+import com.example.myapplication.ui.network.model.JobClassificationVO
+import com.example.myapplication.ui.network.model.SysDeptModel
 
 
 class ChannelSearchPageActivity : AppCompatActivity() {
@@ -16,31 +19,29 @@ class ChannelSearchPageActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchChannelPageBinding
     private lateinit var searchView: SearchView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var channelSearchPageViewModel: ChannelSearchPageViewModel
+    private lateinit var searchChannelListAdapter: SearchChannelListAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchChannelPageBinding.inflate(layoutInflater)
-        searchView = binding.citySearchView
+        searchView = binding.channelSearchView
+        recyclerView = binding.cityRecyclerView
         setContentView(binding.root)
+        channelSearchPageViewModel =
+            ViewModelProvider(this)[ChannelSearchPageViewModel::class.java]
+        recyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        searchChannelListAdapter = SearchChannelListAdapter(this)
+        //initViews()
+        recyclerView.adapter = searchChannelListAdapter
 
-        initViews()
-    }
-
-    private fun performSearchView() {
-        var queryString : String = searchView.query.toString()
-        if(queryString.isNullOrEmpty()){
-            Toast.makeText(this, "搜索内容不能为空", Toast.LENGTH_SHORT).show()
-            return
+        // 观察数据变化
+        channelSearchPageViewModel.dataList.observe(this) {
+            searchChannelListAdapter.setData(it)
         }
-        performSearch(queryString)
-    }
-
-    private fun performSearch(query: String) {
-        // 执行搜索操作
-        Toast.makeText(this, "Searching: $query", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun initViews() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
@@ -49,17 +50,39 @@ class ChannelSearchPageActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                // 在此处处理搜索文本变化的逻辑
+                performSearch(newText)
                 return true
             }
         })
 
-        val itemDecorationHor =
-            DividerItemDecoration(applicationContext, DividerItemDecoration.HORIZONTAL)
-        itemDecorationHor.setDrawable(ColorDrawable(Color.parseColor("#e0e0e0")))
-        val itemDecorationVer =
-            DividerItemDecoration(applicationContext, DividerItemDecoration.VERTICAL)
-        itemDecorationVer.setDrawable(ColorDrawable(Color.parseColor("#e0e0e0")))
+//        supportActionBar?.elevation = 0.0f
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
+
+    fun onItemClick(jobClassificationVO: JobClassificationVO) {
+        val intent = Intent(this, PreferenceEditActivity::class.java)
+        intent.putExtra("channelId", jobClassificationVO.dictItemCode)
+        intent.putExtra("channel", jobClassificationVO.dictItemName)
+        intent.putExtra("buildJobClassification", jobClassificationVO.buildJobClassification)
+        setResult(RESULT_OK,intent)
+        finish()
+    }
+
+    private fun performSearch(query: String) {
+        // 执行搜索操作
+        channelSearchPageViewModel.initData(query)
+        searchChannelListAdapter.setKeyWord(query)
+        recyclerView.scrollToPosition(0) // 滚动到顶部
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 
 }

@@ -7,6 +7,7 @@ import com.example.myapplication.ui.network.model.CandidatePreference
 import com.example.myapplication.ui.network.model.CandidateCardResult
 import com.example.myapplication.ui.network.model.JobClassificationVO
 import com.example.myapplication.ui.network.model.JobFilter
+import com.example.myapplication.ui.network.model.PreferenceModel
 import com.example.myapplication.ui.network.model.PreferenceOption
 import com.example.myapplication.ui.network.model.RecruiterCardResult
 import com.example.myapplication.ui.network.model.RecruiterPreference
@@ -20,17 +21,6 @@ import retrofit2.http.Query
 interface RetrofitService {
 
 
-    @GET("basedict-service/dict/search/jobClassification")
-    fun searchIndustry(@Query("channelName") channelName: String): Call<ApiResponse<List<JobClassificationVO>>>
-
-    @GET("basedict-service/dict/v1/salary")
-    fun searchSalary(@Query("role") role: Int): Call<ApiResponse<List<BaseDictModel>>>
-
-    @GET("basedict-service/search/jobClassification")
-    fun searchChannel(@Query("channelName") channelName: String): Call<ApiResponse<List<JobClassificationVO>>>
-
-    @GET("basedict-service/dept/search")
-    fun searchCity(@Query("keywords") keywords: String): Call<ApiResponse<List<SysDeptModel>>>
     //------------ to B/
     @POST("candidate-service/candidates/recommendation")
     fun getRecommendationCandidates(@Query("type") type: Int,@Query("cityId") cityId: Int,@Query("jobId") jobId: Long,@Query("pageNum") pageNum: Int,@Query("pageSize") pageSize: Int,@Body candidateFilter: CandidateFilter): Call<ApiResponse<CandidateCardResult>>
@@ -47,4 +37,16 @@ interface RetrofitService {
 
     @POST("job-service/v1/jobs/recommendation")
     fun getRecommendationRecruiters(@Query("type") type: Int,@Query("cityId") cityId: Int,@Query("preferenceId") preferenceId: Long,@Query("pageNum") pageNum: Int,@Query("pageSize") pageSize: Int,@Body jobFilter: JobFilter): Call<ApiResponse<RecruiterCardResult>>
+
+    @POST("candidate-service/candidates/preferences")
+    fun savePreference(@Body preferenceModel : PreferenceModel): Call<ApiResponse<PreferenceModel>>
+
+    @GET("basedict-service/dict/v1/salary")
+    fun searchSalary(@Query("role") role: Int): Call<ApiResponse<List<BaseDictModel>>>
+
+    @GET("basedict-service/dict/search/jobClassification")
+    fun searchChannel(@Query("channelName") channelName: String): Call<ApiResponse<List<JobClassificationVO>>>
+
+    @GET("basedict-service/dept/search")
+    fun searchCity(@Query("keywords") keywords: String): Call<ApiResponse<List<SysDeptModel>>>
 }

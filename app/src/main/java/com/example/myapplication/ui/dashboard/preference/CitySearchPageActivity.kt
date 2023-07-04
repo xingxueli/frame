@@ -1,13 +1,18 @@
 package com.example.myapplication.ui.dashboard.preference
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.AdapterView.OnItemClickListener
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ActivitySearchCityPageBinding
+import com.example.myapplication.ui.network.model.SysDeptModel
 
 
 class CitySearchPageActivity : AppCompatActivity() {
@@ -31,7 +36,7 @@ class CitySearchPageActivity : AppCompatActivity() {
             ViewModelProvider(this)[CitySearchPageViewModel::class.java]
         recyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        searchCityListAdapter = SearchCityListAdapter()
+        searchCityListAdapter = SearchCityListAdapter(this)
         //initViews()
         recyclerView.adapter = searchCityListAdapter
 
@@ -54,8 +59,16 @@ class CitySearchPageActivity : AppCompatActivity() {
 
 //        supportActionBar?.elevation = 0.0f
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     }
 
+    fun onItemClick(sysDeptModel: SysDeptModel) {
+        val intent = Intent(this, PreferenceEditActivity::class.java)
+        intent.putExtra("city", sysDeptModel.city)
+        intent.putExtra("cityId", "${sysDeptModel.deptId}")
+        setResult(RESULT_OK,intent)
+        finish()
+    }
 
     private fun performSearch(query: String) {
         // 执行搜索操作

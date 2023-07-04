@@ -11,6 +11,7 @@ import com.example.myapplication.ui.network.RetrofitUtils
 import com.example.myapplication.ui.network.model.ApiResponse
 import com.example.myapplication.ui.network.model.BaseDictModel
 import com.example.myapplication.ui.network.model.Headers
+import com.example.myapplication.ui.network.model.PreferenceModel
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -21,6 +22,7 @@ class PreferenceEditViewModel : ViewModel() {
     private val tag : String  = this::class.java.simpleName
 
     val dataList: MutableLiveData<List<BaseDictModel>> = MutableLiveData()
+    val savePreferenceResponse: MutableLiveData<ApiResponse<PreferenceModel>?> = MutableLiveData()
 
     fun initData() {
         loadData()
@@ -50,6 +52,37 @@ class PreferenceEditViewModel : ViewModel() {
             }
 
             override fun onFailure(call: Call<ApiResponse<List<BaseDictModel>>>, t: Throwable) {
+                t.message?.let { Log.i(tag, it) }
+            }
+
+        })
+
+    }
+
+    fun savePreference(preferenceModel:PreferenceModel){
+        val retrofitService = RetrofitUtils.create(RetrofitService::class.java)
+
+        retrofitService.savePreference(preferenceModel).enqueue(object :
+            Callback<ApiResponse<PreferenceModel>> {
+            override fun onResponse(
+                call: Call<ApiResponse<PreferenceModel>>,
+                response: Response<ApiResponse<PreferenceModel>>
+            ) {
+                var apiResponse : ApiResponse<PreferenceModel>? = response.body()
+                var gson = Gson()
+//                Log.i(tag,"-----------------")
+//                Log.i(tag,gson.toJson(apiResponse))
+                if(apiResponse!!.isSuccess()){
+                    savePreferenceResponse.postValue(apiResponse)
+                }else{
+                    gson = Gson()
+//                    Log.i(tag,gson.toJson(apiResponse))
+                    Toast.makeText(App.instance, gson.toJson(apiResponse.message), Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse<PreferenceModel>>, t: Throwable) {
                 t.message?.let { Log.i(tag, it) }
             }
 

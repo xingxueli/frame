@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivityPreferenceEditBinding
+import com.example.myapplication.ui.network.model.PreferenceModel
+import com.google.gson.Gson
 
 
 class PreferenceEditActivity : AppCompatActivity(){
@@ -20,7 +22,21 @@ class PreferenceEditActivity : AppCompatActivity(){
     private lateinit var binding: ActivityPreferenceEditBinding
     private lateinit var preferenceEditViewModel: PreferenceEditViewModel
     private lateinit var salaryPicker: SalaryPicker
-    private var deptId: Int = 0
+    private var cityId: Int = 0
+    //Job type 1: full time 2: part time
+    private var jobTypeId = 1
+    private var channelIds :MutableList<Int> = mutableListOf()
+    private var salaryType = 0
+    private var salaryUnit = 0
+    private var salaryMin = 0
+    private var salaryMax = 0
+    private var industryTags:MutableList<Int> = mutableListOf(-1)
+    private val requestDataLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                result.data?.let { handlePageInteraction(it) }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +47,7 @@ class PreferenceEditActivity : AppCompatActivity(){
             ViewModelProvider(this)[PreferenceEditViewModel::class.java]
 
         handleButton()
-        handlePageInteraction()
+        handlePageInteraction(this.intent)
         initSalaryData()
 //        supportActionBar?.elevation = 0.0f
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -46,31 +62,34 @@ class PreferenceEditActivity : AppCompatActivity(){
             salaryPicker.setData(salaryProvider)
 
             salaryPicker.setOnLinkagePickedListener {
-                    first, second, third ->
-                Log.i(tag,"$first - $second")
+                    first, second, _ ->
+                binding.textView15.text = "$first - $second"
+                var modelMap = salaryProvider.getModelMap()
+                salaryMin = modelMap[first]!!
+                salaryMax = modelMap[second]!!
             }
         }
     }
 
+    private fun handlePageInteraction(intent: Intent) {
 
-//    private fun addListener(){
-//        // 在接收结果的Fragment中注册结果监听器
-//        supportFragmentManager.setFragmentResultListener(resultKey, this) { _, result ->
-//            val value1 = result.getInt("value1")
-//            val value2 = result.getInt("value2")
-//
-//            // 处理接收到的结果
-//            // 在这里可以根据接收到的结果执行相应的操作
-//            Log.d("Result", "Received result: $value1   $value2")
-//        }
-//
-//    }
+        var cityIdString = intent.getStringExtra("cityId")
+        if(cityIdString != null){
+            cityId = cityIdString.toInt()
+            binding.textView11.text = intent.getStringExtra("city")
+        }
 
-    private fun handlePageInteraction(){
-        val city = intent.getStringExtra("city")
-        deptId = intent.getIntExtra("deptId",0)
-        binding.textView11.text = city
-        Log.d(tag, deptId.toString())
+        var salaryString = intent.getStringExtra("salary")
+        if(salaryString != null){
+            binding.textView15.text = intent.getStringExtra("salary")
+        }
+        val channelId = intent.getStringExtra("channelId")
+        if(channelId != null){
+            channelIds.add(channelId.toInt())
+//        val dictItemName = intent.getStringExtra("dictItemName")
+            binding.textView13.text = intent.getStringExtra("buildJobClassification")
+        }
+
     }
 
     private fun handleButton(){
@@ -97,30 +116,45 @@ class PreferenceEditActivity : AppCompatActivity(){
             rightTextView.setText(R.string.part_time)
             leftTextView.setTextColor(colorOff)
             rightTextView.setTextColor(colorOn)
-
+            jobTypeId = 2
         }
     }
 
 
     private fun showDynamicTwoColumnWheelDialogFragment() {
         salaryPicker.show()
-        //fragment 之间activity和fragment之间传值
-//        dynamicTwoColumnWheelDialogFragment.show(supportFragmentManager, "dynamic_two_column_wheel")
     }
-
-//    override fun onValuesSelected(value1: String, value2: String) {
-        // 处理选中的值的操作
-        // 例如，可以更新UI显示选中的值
-//        textView1.text = value1.toString()
-//        textView2.text = value2.toString()
-//    }
 
     fun onClick(view: View) {
         when (view) {
-            binding.ivArrow,binding.textView10,binding.textView11 -> startActivity(Intent(this, CitySearchPageActivity::class.java))
-            binding.ivArrow1,binding.textView12,binding.textView13 -> startActivity(Intent(this, ChannelSearchPageActivity::class.java))
+            binding.ivArrow,binding.textView10,binding.textView11 -> requestDataLauncher.launch(Intent(this, CitySearchPageActivity::class.java))
+            binding.ivArrow1,binding.textView12,binding.textView13 -> requestDataLauncher.launch(Intent(this, ChannelSearchPageActivity::class.java))
             binding.ivArrow2,binding.textView14,binding.textView15 -> showDynamicTwoColumnWheelDialogFragment()
+            binding.save -> savePreference()
+            binding.delete -> deletePreference()
         }
+    }
+
+    private fun savePreference(){
+        var preferenceModel = PreferenceModel()
+        preferenceModel.cityId = cityId
+        preferenceModel.jobTypeId = jobTypeId
+        preferenceModel.channelIds = channelIds
+        preferenceModel.salaryType = salaryType
+        preferenceModel.salaryUnit = salaryUnit
+        preferenceModel.salaryMin = salaryMin
+        preferenceModel.salaryMax = salaryMax
+        preferenceModel.industryTags = industryTags
+        preferenceEditViewModel.savePreference(preferenceModel)
+
+        preferenceEditViewModel.savePreferenceResponse.observe(this){
+            Log.i(tag,Gson().toJson(it))
+            startActivity(Intent(this,PreferenceListActivity::class.java))
+        }
+    }
+
+    private fun deletePreference(){
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

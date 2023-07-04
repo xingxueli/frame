@@ -9,6 +9,7 @@ class SalaryProvider(private val baseDictModelList:List<BaseDictModel>) : Linkag
 
     private val tag : String  = this::class.java.simpleName
     private var map : Map<String,List<String>> = mapOf()
+    private var modelMap: Map<String,Int> = mapOf()
 
     override fun firstLevelVisible(): Boolean {
         return true
@@ -28,7 +29,12 @@ class SalaryProvider(private val baseDictModelList:List<BaseDictModel>) : Linkag
         map = childs?.map { r -> r.dictItemName to (r.child?.map { s->s.dictItemName }?.toList()) as List<String> }
             ?.toMap() as Map<String, List<String>>
 
+        modelMap = childs?.map { r -> r.dictItemName to r.salaryValue }?.toMap() as Map<String,Int>
         return strings as List<String>
+    }
+
+    fun getModelMap() : Map<String,Int>{
+        return modelMap
     }
 
     override fun linkageSecondData(firstIndex: Int): List<String> {

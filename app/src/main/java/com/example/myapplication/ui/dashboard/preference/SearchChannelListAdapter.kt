@@ -10,18 +10,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
+import com.example.myapplication.ui.network.model.JobClassificationVO
 import com.example.myapplication.ui.network.model.SysDeptModel
 import java.util.Locale
 
-class SearchCityListAdapter(private val activity: CitySearchPageActivity) : RecyclerView.Adapter<SearchCityListAdapter.ViewHolder>() {
+class SearchChannelListAdapter(private val activity: ChannelSearchPageActivity) : RecyclerView.Adapter<SearchChannelListAdapter.ViewHolder>() {
 
     private val tag : String  = this::class.java.simpleName
-    private val dataList = mutableListOf<SysDeptModel>()
+    private val dataList = mutableListOf<JobClassificationVO>()
     private var searchKeyword: String = ""
 
     //在内部类里面获取到item里面的组件
@@ -38,9 +38,9 @@ class SearchCityListAdapter(private val activity: CitySearchPageActivity) : Recy
         viewHolder.itemView.setOnClickListener {
             var position = viewHolder.adapterPosition
             if(dataList.size > 0){
-                var sysDeptModel = dataList[position]
-                if (sysDeptModel != null) {
-                    activity.onItemClick(sysDeptModel)
+                var jobClassificationVO = dataList[position]
+                if (jobClassificationVO != null) {
+                    activity.onItemClick(jobClassificationVO)
                 }
             }
         }
@@ -50,10 +50,10 @@ class SearchCityListAdapter(private val activity: CitySearchPageActivity) : Recy
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if(dataList.size > 0){
-            val sysDeptModel = dataList[position]
-            if (sysDeptModel != null) {
+            val jobClassificationVO = dataList[position]
+            if (jobClassificationVO != null) {
                 if (searchKeyword.isNotEmpty()) {
-                    val itemText = sysDeptModel.city
+                    val itemText = jobClassificationVO.buildJobClassification
                     val startPos = itemText?.lowercase(Locale.getDefault())?.indexOf(searchKeyword.lowercase(Locale.getDefault()))
 
                     if (startPos != -1) {
@@ -74,7 +74,7 @@ class SearchCityListAdapter(private val activity: CitySearchPageActivity) : Recy
                         holder.row1.text =  itemText
                     }
                 } else {
-                    holder.row1.text = sysDeptModel.city
+                    holder.row1.text = jobClassificationVO.buildJobClassification
                 }
 
             }
@@ -85,7 +85,7 @@ class SearchCityListAdapter(private val activity: CitySearchPageActivity) : Recy
         return dataList.size;
     }
 
-    fun setData(dataList: List<SysDeptModel>) {
+    fun setData(dataList: List<JobClassificationVO>) {
         this.dataList.clear()
         this.dataList.addAll(dataList)
         notifyDataSetChanged()

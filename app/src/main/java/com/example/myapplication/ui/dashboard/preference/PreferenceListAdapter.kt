@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.dashboard.preference
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,6 +54,7 @@ class PreferenceListAdapter : RecyclerView.Adapter<PreferenceListAdapter.ViewHol
             intent.putExtra("channel", "${item.channel}")
             intent.putExtra("channelId", "${item.channelId}")
             intent.putExtra("salary", "${item.salary}")
+            intent.putExtra("buildJobClassification", "${item.buildJobClassification}")
 //            intent.pu.putExtra("channelId", "${item.industryTags}")
             parent.context.startActivity(intent)
         }
